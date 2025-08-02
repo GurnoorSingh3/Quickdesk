@@ -1,0 +1,191 @@
+/* style.css */
+:root {
+  --gold: #D4AF37;
+  --dark-gold: #B8860B;
+  --dark-bg: #121212;
+  --darker-bg: #0a0a0a;
+  --card-bg: #1e1e1e;
+  --text-light: #f0f0f0;
+  --text-muted: #aaaaaa;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+  min-height: 100vh;
+}
+
+header {
+  background-color: var(--darker-bg);
+  color: var(--gold);
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--gold);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  filter: invert(75%) sepia(40%) saturate(500%) hue-rotate(5deg) brightness(90%) contrast(90%);
+}
+
+nav button {
+  margin-left: 1rem;
+  padding: 0.7rem 1.5rem;
+  background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+  color: #000;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+nav button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+nav button i {
+  margin-right: 8px;
+}
+
+main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+form {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  margin: 2rem auto;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+form h2 {
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: #2a2a2a;
+  color: var(--text-light);
+  font-size: 16px;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+button[type="submit"], .ticket-card button, .action-button {
+  background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+button[type="submit"]:hover, .ticket-card button:hover, .action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ticket-card {
+  background: var(--card-bg);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-left: 4px solid var(--gold);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.ticket-card:hover {
+  transform: translateY(-5px);
+}
+
+.ticket-card h3 {
+  color: var(--gold);
+  margin-top: 0;
+}
+
+.ticket-card p {
+  color: var(--text-muted);
+  margin: 0.5rem 0;
+}
+
+.ticket-card button {
+  width: auto;
+  padding: 8px 16px;
+  margin-top: 1rem;
+}
+
+footer {
+  background-color: var(--darker-bg);
+  color: var(--text-muted);
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.support-image {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.support-image img {
+  max-width: 200px;
+  opacity: 0.8;
+}
+
+.status-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.status-open {
+  background-color: rgba(0, 255, 0, 0.1);
+  color: #0f0;
+}
+
+.status-closed {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #f00;
+}
