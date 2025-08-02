@@ -1,7 +1,6 @@
-// script.js
 document.addEventListener("DOMContentLoaded", () => {
   const app = document.getElementById("app");
-  let isLoggedIn = false;
+
   let tickets = [
     {
       id: 1,
@@ -9,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
       description: "Unable to login to my account",
       status: "Open",
       category: "Technical",
-      createdAt: new Date()
+      createdAt: new Date(),
     },
     {
       id: 2,
@@ -17,9 +16,40 @@ document.addEventListener("DOMContentLoaded", () => {
       description: "Need clarification on my last invoice",
       status: "Open",
       category: "Billing",
-      createdAt: new Date(Date.now() - 86400000)
-    }
+      createdAt: new Date(Date.now() - 86400000 * 2),
+    },
   ];
+
+  function isUserLoggedIn() {
+    return localStorage.getItem("isLoggedIn") === "true";
+  }
+
+  function timeAgo(date) {
+    const diff = Math.floor((Date.now() - new Date(date)) / 1000);
+    if (diff < 60) return `${diff} seconds ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return `${Math.floor(diff / 86400)} days ago`;
+  }
+
+  function renderStatsPanel() {
+    const total = tickets.length;
+    const open = tickets.filter((t) => t.status === "Open").length;
+    const assigned = tickets.filter((t) =>
+      ["Assigned", "In Progress"].includes(t.status)
+    ).length;
+    const closed = tickets.filter((t) => t.status === "Closed").length;
+
+    return `
+      <div class="stats-panel">
+        <h3>\u{1F4CA} Ticket Statistics</h3>
+        <p><strong>Total:</strong> ${total}</p>
+        <p><strong>Open:</strong> ${open}</p>
+        <p><strong>Assigned/In Progress:</strong> ${assigned}</p>
+        <p><strong>Closed:</strong> ${closed}</p>
+      </div>
+    `;
+  }
 
   function loadLoginForm() {
     app.innerHTML = `
@@ -33,109 +63,97 @@ document.addEventListener("DOMContentLoaded", () => {
         <button type="submit">Login</button>
       </form>
     `;
-    
+
     document.getElementById("loginForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      isLoggedIn = true;
+      localStorage.setItem("isLoggedIn", "true");
       loadDashboard();
     });
   }
 
-  function loadRegisterForm() {
-    app.innerHTML = `
-      <div class="support-image">
-        <img src="https://cdn-icons-png.flaticon.com/512/3309/3309953.png" alt="Register Icon">
-      </div>
-      <h2>Register</h2>
-      <form id="registerForm">
-        <input type="text" placeholder="Username" required /><br>
-        <input type="email" placeholder="Email" required /><br>
-        <input type="password" placeholder="Password" required /><br>
-        <button type="submit">Register</button>
-      </form>
-    `;
-    
-    document.getElementById("registerForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      alert("Registration successful! Please login.");
-      loadLoginForm();
-    });
-  }
-
   function loadDashboard() {
-    if (!isLoggedIn) {
-      loadLoginForm();
-      return;
-    }
-    
-    const ticketsHTML = tickets.map(ticket => `
+    const ticketsHTML = tickets
+      .map(
+        (ticket) => `
       <div class="ticket-card">
         <span class="status-badge status-${ticket.status.toLowerCase()}">${ticket.status}</span>
         <h3>${ticket.subject}</h3>
         <p>Category: ${ticket.category}</p>
-        <p>Created: ${ticket.createdAt.toLocaleDateString()}</p>
+        <p>Created: ${timeAgo(ticket.createdAt)}</p>
         <button onclick="viewTicket(${ticket.id})">View Details</button>
       </div>
-    `).join('');
-    
+    `
+      )
+      .join("");
+
     app.innerHTML = `
-      <div class="support-image">
+      <div class="support-image" style="display: flex; justify-content: space-between; align-items: center;">
         <img src="https://cdn-icons-png.flaticon.com/512/2885/2885417.png" alt="Dashboard Icon">
+        <div style="display: flex; gap: 10px;">
+          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom:  0px;">
+    <button id="logoutBtn" class="action-button">Logout</button>
+  </div>
+          <button class="action-button" id="createTicketBtn">
+            <i class="fas fa-plus"></i> Create New Ticket
+          </button>
+        </div>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h2>Your Tickets</h2>
-        <button class="action-button" onclick="loadCreateTicketForm()">
-          <i class="fas fa-plus"></i> Create New Ticket
-        </button>
+      ${renderStatsPanel()}
+      
+      <h2 style="margin-top: 2rem;">Your Tickets</h2>
+      <div style="margin-top: 1rem;">
+        ${ticketsHTML}
       </div>
-      ${ticketsHTML}
     `;
+
+    document.getElementById("createTicketBtn").addEventListener("click", loadCreateTicketForm);
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("isLoggedIn");
+      loadLoginForm();
+    });
   }
 
-  window.viewTicket = function(ticketId) {
-    const ticket = tickets.find(t => t.id === ticketId);
+  window.viewTicket = function (ticketId) {
+    const ticket = tickets.find((t) => t.id === ticketId);
     if (!ticket) return;
-    
+
     app.innerHTML = `
       <div class="support-image">
         <img src="https://cdn-icons-png.flaticon.com/512/3176/3176272.png" alt="Ticket Icon">
       </div>
-      <div class="ticket-card" style="max-width: 800px;">
+      <div class="ticket-card detailed">
         <span class="status-badge status-${ticket.status.toLowerCase()}">${ticket.status}</span>
         <h2>${ticket.subject}</h2>
         <p><strong>Category:</strong> ${ticket.category}</p>
         <p><strong>Status:</strong> ${ticket.status}</p>
         <p><strong>Created:</strong> ${ticket.createdAt.toLocaleString()}</p>
-        <h3 style="margin-top: 1.5rem; color: var(--gold);">Description</h3>
-        <p style="background: #2a2a2a; padding: 1rem; border-radius: 5px;">${ticket.description}</p>
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-          <button class="action-button" onclick="loadDashboard()">
+        <h3>Description</h3>
+        <p>${ticket.description}</p>
+        <div class="ticket-actions">
+          <button id="backToTicketsBtn">
             <i class="fas fa-arrow-left"></i> Back to Tickets
           </button>
-          ${ticket.status === 'Open' ? `
-            <button class="action-button" onclick="closeTicket(${ticket.id})" style="background: linear-gradient(135deg, #ff4444, #cc0000);">
-              <i class="fas fa-times"></i> Close Ticket
-            </button>
-          ` : ''}
+          ${
+            ticket.status === "Open"
+              ? `<button onclick="closeTicket(${ticket.id})" class="danger">Close Ticket</button>`
+              : ""
+          }
         </div>
       </div>
     `;
+
+    document.getElementById("backToTicketsBtn").addEventListener("click", loadDashboard);
   };
 
-  window.closeTicket = function(ticketId) {
-    const ticketIndex = tickets.findIndex(t => t.id === ticketId);
-    if (ticketIndex !== -1) {
-      tickets[ticketIndex].status = 'Closed';
+  window.closeTicket = function (ticketId) {
+    const ticket = tickets.find((t) => t.id === ticketId);
+    if (ticket) {
+      ticket.status = "Closed";
       viewTicket(ticketId);
     }
   };
 
-  window.loadCreateTicketForm = function() {
-    if (!isLoggedIn) {
-      loadLoginForm();
-      return;
-    }
-    
+  function loadCreateTicketForm() {
     app.innerHTML = `
       <div class="support-image">
         <img src="https://cdn-icons-png.flaticon.com/512/1038/1038100.png" alt="Create Ticket Icon">
@@ -150,34 +168,33 @@ document.addEventListener("DOMContentLoaded", () => {
           <option>Billing</option>
           <option>General</option>
         </select><br>
-        <label style="display: block; margin: 1rem 0 0.5rem; color: var(--text-muted);">
-          <i class="fas fa-paperclip"></i> Attachments (optional)
-        </label>
         <input type="file" /><br>
         <button type="submit">Submit Ticket</button>
       </form>
     `;
-    
+
     document.getElementById("createTicketForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const form = e.target;
-      const newTicket = {
+      tickets.unshift({
         id: tickets.length + 1,
         subject: form[0].value,
         description: form[1].value,
-        status: "Open",
         category: form[2].value,
-        createdAt: new Date()
-      };
-      tickets.unshift(newTicket);
-      loadDashboard();
+        status: "Open",
+        createdAt: new Date(),
+      });
       alert("Ticket created successfully!");
+      loadDashboard();
     });
-  };
+  }
 
-  document.getElementById("loginBtn").addEventListener("click", loadLoginForm);
-  document.getElementById("registerBtn").addEventListener("click", loadRegisterForm);
-
-  // Start with dashboard if logged in, otherwise login form
-  isLoggedIn ? loadDashboard() : loadLoginForm();
+  if (isUserLoggedIn()) {
+    loadDashboard();
+  } else {
+    loadLoginForm();
+  }
 });
+
+
+

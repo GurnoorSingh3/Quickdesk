@@ -189,3 +189,11 @@ footer {
   background-color: rgba(255, 0, 0, 0.1);
   color: #f00;
 }
+.stats-panel {
+  background-color: #000000;
+  color: gold;
+  padding: 16px;
+  border: 1px solid gold;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
